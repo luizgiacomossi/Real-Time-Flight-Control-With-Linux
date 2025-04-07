@@ -1,58 +1,105 @@
-# Real-Time-Flight-Control-With-Linux
 # Quadcopter Flight Control System
 
 ## Overview
 
-This code implements a basic flight control system for a quadcopter, focusing on position and attitude control. The system includes controllers for position, attitude, and yaw, and allocates control forces and torques to each motor based on the current state of the quadcopter and the desired reference position and attitude.
+This repository implements a real-time flight control system for quadcopters on Linux. The system focuses on precise position and attitude control through a series of interconnected controllers that translate desired positions into motor commands. This implementation prioritizes stability and control accuracy in a real-time environment.
 
 ## Features
 
-*   **Position Control:** Uses a Proportional-Derivative (PD) controller to calculate the desired force for each axis based on the position and velocity error.
-*   **Attitude Control:** Uses a PD controller to calculate the desired torque for roll, pitch, and yaw based on the attitude and angular velocity error.
-*   **Control Allocation:** Maps the calculated desired total thrust and torques to individual motor commands based on the quadcopter's physical design (motor distance, thrust/torque coefficients).
-*   **Flight Control Loop:** The main loop updates the state of the quadcopter, calculates control outputs (forces, torques, motor commands), and simulates the next time step.
+* **Position Control:** PD controller calculates desired force vectors based on position and velocity errors
+* **Attitude Control:** PD controller determines torque requirements for roll, pitch, and yaw based on attitude and angular velocity errors
+* **Control Allocation:** Maps calculated thrust and torques to individual motor commands based on quadcopter geometry
+* **Real-Time Processing:** Optimized for Linux systems with precise timing control
+* **Configurable Gains:** Adjustable PID parameters for tuning control response
+* **Simulation Mode:** Test flight algorithms before deployment to hardware
 
-## Code Structure
+## System Architecture
 
-The code utilizes several structures to organize data:
+The system is organized using the following data structures:
 
-*   `Vector3`: Represents a 3D vector (used for position, velocity, force, etc.).
-*   `Attitude`: Represents the roll, pitch, and yaw angles of the quadcopter (in radians).
-*   `AngularVelocity`: Represents the rates of change of roll, pitch, and yaw (in radians per second).
-*   `MotorCommands`: Represents the speeds of the four motors (in radians per second).
-*   `ControllerGains`: Contains the proportional (Kp) and derivative (Kd) gains for the position, attitude, and yaw controllers.
-*   `QuadcopterState`: Holds the complete current state of the quadcopter, including position, velocity, attitude, angular velocity, and motor speeds.
-*   `Reference`: Holds the desired target position and yaw for the quadcopter.
-*   `ControlOutputs`: Contains the intermediate and final control outputs, including desired forces, desired torques, and the final motor commands.
+| Structure | Purpose |
+|-----------|---------|
+| `Vector3` | Represents 3D vectors for position, velocity, force, etc. |
+| `Attitude` | Stores roll, pitch, and yaw angles (radians) |
+| `AngularVelocity` | Tracks rates of change for roll, pitch, and yaw (rad/s) |
+| `MotorCommands` | Contains speed commands for all four motors (rad/s) |
+| `ControllerGains` | Holds PD gains for position, attitude, and yaw controllers |
+| `QuadcopterState` | Maintains the complete state of the quadcopter |
+| `Reference` | Stores target position and yaw orientation |
+| `ControlOutputs` | Contains intermediate and final control calculations |
+
+## Control Flow
+
+The control system operates in a continuous loop:
+
+1. State acquisition (from sensors or simulation)
+2. Position controller calculates required forces
+3. Control allocator 1 converts forces to desired attitude and thrust
+4. Attitude controller determines required torques
+5. Control allocator 2 maps thrust and torques to motor commands
+6. Motor commands are applied to actuators
+7. System state is updated
+
+![Control Flow Diagram (Placeholder)]()
 
 ## Key Functions
 
-*   `initializeController()`: Initializes the `ControllerGains` structure with default gain values.
-*   `positionController()`: Calculates the desired net force vector based on position and velocity errors relative to the `Reference`.
-*   `controlAllocator1()`: Converts the horizontal components of the desired force into desired roll and pitch angles. It also passes through the vertical force component as the total desired thrust.
-*   `attitudeController()`: Calculates the desired torque vector (roll, pitch, yaw moments) based on the attitude and angular velocity errors relative to the desired attitude (from `controlAllocator1`) and the reference yaw.
-*   `controlAllocator2()`: Takes the total desired thrust and the desired torque vector and calculates the required speed for each of the four motors.
-*   `updateFlightControl()`: Acts as the main integration point for one control cycle. It calls the controllers and allocators in sequence to compute the final `MotorCommands` based on the current `QuadcopterState` and `Reference`.
-*   `updateCurrentState()`: Simulates the update of the quadcopter's state based on new sensor inputs or simulation results (in this basic example, it might just update based on previous commands or dummy data).
+* `initializeController()`: Sets up controller gains with default or configured values
+* `positionController()`: Calculates force vector based on position/velocity errors
+* `controlAllocator1()`: Converts horizontal forces into roll/pitch angles and calculates thrust
+* `attitudeController()`: Determines torques based on attitude and angular velocity errors
+* `controlAllocator2()`: Maps thrust and torques to individual motor speeds
+* `updateFlightControl()`: Orchestrates the complete control cycle
+* `updateCurrentState()`: Updates quadcopter state from sensors or simulation
 
-## Usage
+## Installation
 
-The program simulates the flight control process for a quadcopter.
+### Prerequisites
 
-1.  A `Reference` position and yaw are defined.
-2.  The `QuadcopterState` is initialized or updated.
-3.  The `updateFlightControl` function is called periodically.
-4.  Inside `updateFlightControl`:
-    *   The `positionController` calculates the necessary force.
-    *   `controlAllocator1` determines the desired attitude and total thrust.
-    *   The `attitudeController` calculates the necessary torques.
-    *   `controlAllocator2` computes the individual `MotorCommands`.
-5.  These motor commands would typically be sent to the motors (or used in a physics simulation to calculate the next state).
-6.  The main loop simulates this control process over time and prints key control outputs.
+* C Compiler (GCC/Clang)
+* Linux operating system (recommended)
+* Math library (libm)
+* Real-time extensions (optional, for improved timing precision)
 
-### Example Output
+### Building from Source
 
-```yaml
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/Real-Time-Flight-Control-With-Linux.git
+cd Real-Time-Flight-Control-With-Linux
+
+# Build the project
+gcc -o quad_control quad_control.c -lm
+
+# Run the controller
+./quad_control
+```
+
+## Configuration and Tuning
+
+The controller gains in `initializeController()` must be tuned for your specific quadcopter. The default values are:
+
+```c
+// Position controller gains
+controller.position.Kp = 2.5f;
+controller.position.Kd = 1.5f;
+
+// Attitude controller gains
+controller.attitude.Kp = 5.0f;
+controller.attitude.Kd = 1.0f;
+
+// Yaw controller gains
+controller.yaw.Kp = 2.0f;
+controller.yaw.Kd = 0.5f;
+```
+
+Adjust these values based on your quadcopter's mass, inertia, and motor characteristics. Too high gains may cause oscillations, while too low gains will result in sluggish response.
+
+## Example Output
+
+When running properly, the system outputs control information at each step:
+
+```
 Control Outputs:
 Position Error: [1.00, 1.00, 1.00] m
 Force: [2.50, 2.50, 9.81] N
@@ -61,43 +108,23 @@ Total Thrust: 5.00 N
 Torque: [0.10, -0.05, 0.02] Nm
 Motor Commands: [1.50, 1.50, 1.50, 1.50] rad/s
 --------------------------------------------------
-Woke up after 1.5 seconds
-Use code with caution.
-Markdown
-(Note: The specific values depend on the initial state, reference, gains, and simulation time step).
 ```
 
-## Setup
-To compile and run the provided C code:
+## Performance Considerations
 
-Prerequisites: Ensure you have a C compiler installed (e.g., GCC on Linux/macOS, MinGW or MSVC on Windows).
+* Timing: The system uses `nanosleep()` for periodic execution, which is suitable for basic testing but may require real-time extensions for production use
+* Processing: Optimize math operations when deploying to resource-constrained systems
+* Sampling: Ensure sensor sampling rates are appropriate for control loop frequency
 
-Save: Save the code to a file named quad_control.c.
+## Contributing
 
-Compile: Open a terminal or command prompt, navigate to the directory where you saved the file, and compile using:
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-gcc -o quad_control quad_control.c -lm
-Use code with caution.
-Bash
-The -lm flag links the math library.
+## License
 
-Run: Execute the compiled program:
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-./quad_control
-Use code with caution.
-Bash
-(On Windows, you might run quad_control.exe)
+## Acknowledgments
 
-Dependencies
-- C Compiler: GCC, Clang, MSVC, or compatible.
-
-- Standard C Library: Included with the compiler.
-
-- Math Library (math.h): Required for functions like sqrtf, asinf, etc. Needs to be linked during compilation using the -lm flag with GCC/Clang.
-
-## Notes
-- Gain Tuning: The controller gains (Kp, Kd values) provided in initializeController are likely default or example values. For stable and performant flight on a real quadcopter (or a more accurate simulation), these gains must be carefully tuned based on the specific hardware characteristics (mass, inertia, motor response, etc.).
-
-- Simulation: The time simulation in the example uses nanosleep for basic periodic execution. This is a simplified approach and does not represent a full physics simulation of quadcopter dynamics.
-
-- Units: Ensure consistency in units (e.g., meters, seconds, kilograms, radians) throughout the calculations.
+* Special thanks to contributors and the open-source flight control community
+* Research papers and resources that inspired this implementation
