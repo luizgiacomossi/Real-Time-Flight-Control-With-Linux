@@ -114,7 +114,7 @@ Motor Commands: [1.50, 1.50, 1.50, 1.50] rad/s
 
 ## Performance Considerations
 
-* Timing: The system uses `nanosleep()` for periodic execution, which is suitable for basic testing but may require real-time extensions for production use
+* Timing: The system uses `nanosleep()` for periodic execution
 * Processing: Optimize math operations when deploying to resource-constrained systems
 * Sampling: Ensure sensor sampling rates are appropriate for control loop frequency
 
