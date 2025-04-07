@@ -40,7 +40,7 @@ The control system operates in a continuous loop:
 6. Motor commands are applied to actuators
 7. System state is updated
 
-![Control Flow Diagram (Placeholder)]()
+[Diagram_control.drawio (5).pdf](https://github.com/user-attachments/files/19633628/Diagram_control.drawio.5.pdf)
 
 ## Key Functions
 
