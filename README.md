@@ -41,6 +41,8 @@ The control system operates in a continuous loop:
 7. System state is updated
 
 [Diagram_control.drawio (5).pdf](https://github.com/user-attachments/files/19633628/Diagram_control.drawio.5.pdf)
+![Screenshot 2025-04-07 at 16 10 55](https://github.com/user-attachments/assets/2628333f-567b-4c15-91fd-aa5f5ca0aa0a)
+
 
 ## Key Functions
 
