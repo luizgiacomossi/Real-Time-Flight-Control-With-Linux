@@ -128,5 +128,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgments
 
-* Special thanks to contributors and the open-source flight control community
-* Research papers and resources that inspired this implementation
+* Special thanks to contributors ....
