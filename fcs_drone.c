@@ -26,6 +26,8 @@ typedef struct {
     float motor1, motor2, motor3, motor4;  // Motor speeds (ω₁, ω₂, ω₃, ω₄)
 } MotorCommands;
 
+
+
 // Controller gains (to be tuned)
 typedef struct {
     // Position controller gains
