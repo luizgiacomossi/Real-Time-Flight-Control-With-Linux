@@ -5,66 +5,9 @@
 #include <unistd.h>
 #include <time.h>
 #include <string.h>
+#include "fcs_drone.h"  //  header
 
 
-// Vector and matrix utility types
-typedef struct {
-    float x, y, z;
-} Vector3;
-
-typedef struct {
-    float roll;     // phi (φ)
-    float pitch;    // theta (θ)
-    float yaw;      // psi (ψ)
-} Attitude;
-
-typedef struct {
-    float p, q, r;  // Roll, pitch, yaw rates
-} AngularVelocity;
-
-typedef struct {
-    float motor1, motor2, motor3, motor4;  // Motor speeds (ω₁, ω₂, ω₃, ω₄)
-} MotorCommands;
-
-
-
-// Controller gains (to be tuned)
-typedef struct {
-    // Position controller gains
-    float Kp_pos;
-    float Kd_pos;
-    
-    // Attitude controller gains
-    float Kp_att;
-    float Kd_att;
-    
-    // Yaw controller gains
-    float Kp_yaw;
-    float Kd_yaw;
-} ControllerGains;
-
-// System state
-typedef struct {
-    Vector3 position;         // r = [x, y, z]^T
-    Vector3 velocity;         // v = [ẋ, ẏ, ż]^T
-    Attitude attitude;        // α = [φ, θ, ψ]^T
-    AngularVelocity angular;  // ω_b = [p, q, r]^T
-    MotorCommands motors;     // Motor commands
-} QuadcopterState;
-
-// Desired reference
-typedef struct {
-    Vector3 position;      // r_r = [x_r, y_r, z_r]^T
-    float yaw;             // ψ_r
-} Reference;
-
-// Control outputs
-typedef struct {
-    Vector3 force;         // f_r = [f_x,r, f_y,r, f_z,r]^T
-    Vector3 torque;        // τ_r = [τ_x,r, τ_y,r, τ_z,r]^T
-    float total_thrust;    // F
-    Attitude desired_att;  // [φ_r, θ_r, ψ_r]^T
-} ControlOutputs;
 
 // Initialize controller with default gains
 void initializeController(ControllerGains *gains) {
@@ -251,7 +194,7 @@ int main() {
         .motors = {0.0f, 0.0f, 0.0f, 0.0f}
     };
     
-    bool PRINT_INFO = false;
+    bool PRINT_INFO = true;
 
     // Initialize timekeeping
     struct timespec req, rem; // req is the requested time, rem is the remaining time
