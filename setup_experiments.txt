@@ -1,0 +1,59 @@
+# to setup max freq to all cpus and mode performance to avoid cpu throtling 
+
+for cpu in /sys/devices/system/cpu/cpu[0-3]*; do
+    echo 2400000 | sudo tee $cpu/cpufreq/scaling_min_freq
+    echo performance | sudo tee $cpu/cpufreq/scaling_governor
+done
+
+For a quadcopter flight control system, using SCHED_DEADLINE is well-suited for deterministic timing of control loops. The parameters depend on the control frequency, CPU budget, and deadline requirements of your flight control software.
+🧩 Assumptions
+
+Let’s say your flight control loop runs at 500 Hz (i.e., every 2 ms):
+
+    Period (P) = 2 ms = 2,000,000 ns
+
+    Deadline (D) = 2 ms = 2,000,000 ns (typical to match period)
+
+    Runtime (R) = 400 µs = 400,000 ns (based on control loop WCET estimate)
+
+attr.sched_runtime  = 400000;    // 400 µs
+attr.sched_deadline = 2000000;   // 2 ms
+attr.sched_period   = 2000000;   // 2 ms
+
+This gives the task a 20% CPU budget (400 µs every 2 ms), which leaves headroom for other tasks and helps prevent overload.
+
+🎯 Guidelines for Choosing Parameters
+1. Measure Worst-Case Execution Time (WCET)
+
+Use tools like ftrace, perf, or cyclictest to benchmark your flight controller loop.
+2. Leave Slack in Deadline
+
+If WCET is 400 µs, set the deadline to 600–800 µs to account for spikes and I/O jitter.
+3. Don’t Exceed CPU Capacity
+
+Sum of all runtime/period fractions across all SCHED_DEADLINE tasks must not exceed 100% per CPU.
+4. Avoid Setting Deadline < Runtime
+
+Will result in EINVAL or unpredictable behavior.
+
+🚁 Suggested Configs by Control Loop Frequency
+| Loop Rate | Period (ns) | Runtime (ns) | Deadline (ns) | Budget % |
+| --------- | ----------- | ------------ | ------------- | -------- |
+| 1000 Hz   | 1,000,000   | 200,000      | 1,000,000     | 20%      |
+| 500 Hz    | 2,000,000   | 400,000      | 2,000,000     | 20%      |
+| 250 Hz    | 4,000,000   | 800,000      | 4,000,000     | 20%      |
+| 100 Hz    | 10,000,000  | 1,000,000    | 10,000,000    | 10%      |
+
+
+➜  paper_linux sudo ./a.out -j 10000 -c 1500 -r 99 -R 550 -D 2000 -p 2000 -o test_deadline.txt
+
+⚠️ Flight-Critical Considerations
+
+    Pin tasks to isolated CPUs with isolcpus/cpuset.
+
+    Disable CPU frequency scaling and Turbo Boost to reduce jitter.
+
+    Use CPU affinity to prevent migration between cores.
+
+    Avoid memory pressure, disable swap, lock memory (mlockall).
+

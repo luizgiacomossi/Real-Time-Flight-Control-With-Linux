@@ -251,6 +251,8 @@ int main() {
         .motors = {0.0f, 0.0f, 0.0f, 0.0f}
     };
     
+    bool PRINT_INFO = false;
+
     // Initialize timekeeping
     struct timespec req, rem; // req is the requested time, rem is the remaining time
     req.tv_sec = 1;
@@ -321,6 +323,8 @@ int main() {
             &control_outputs,
             &motor_commands);
 
+        if(PRINT_INFO){
+
                 // Display results
         printf("Control Outputs:\n");
         printf("Position Error: [%.2f, %.2f, %.2f] m\n", 
@@ -338,9 +342,10 @@ int main() {
             motor_commands.motor1, motor_commands.motor2, motor_commands.motor3, motor_commands.motor4);
 
         printf("--------------------------------------------------\n");
+
+        }
         // Simulate a delay (for example, 100ms)
         // In a real system, this would be the time between control updates
-
         // Sleep for 1.5 seconds
         nanosleep(&req, NULL);
         
