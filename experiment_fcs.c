@@ -31,6 +31,22 @@
 //    return syscall(SYS_sched_setattr, pid, attr, flags);
 //}
 
+
+void simulate_data_acquisition(int samples, long delay_ns) {
+    struct timespec req;
+    req.tv_sec = 0;
+    req.tv_nsec = delay_ns;
+
+    for (int i = 0; i < samples; i++) {
+        // Simulate reading sensor data
+        //printf("Acquiring sample %d\n", i + 1);
+
+        // Delay to simulate acquisition interval
+        nanosleep(&req, NULL);
+    }
+}
+    
+
 // Function for performing computations (busy wait)
 void perform_computation(long computation_amount)
 {
@@ -45,7 +61,7 @@ void perform_computation(long computation_amount)
 }
 
 // Function for performing computations -- fcs
-void perform_computation2(long computation_amount)
+void perform_computation_fcs(long computation_amount)
 {
 
     // Initialize drone state
@@ -94,7 +110,12 @@ void perform_computation2(long computation_amount)
     MotorCommands motor_commands;
     // Update flight control
 
-    // Simulate some computation
+    // Simulate some sensor updates (for testing)
+    // adds a delay to simulate sensor updates before value updates -> IMU with 500 Hz using the function simulate_data_acquisition
+    //simulate_data_acquisition(1, 2000000); // 1 sample, 2ms delay between samples
+
+
+
     current_state.position.x += 0.1f;
     current_state.position.y += 0.1f;
     current_state.position.z += 0.1f;
@@ -157,7 +178,7 @@ int main(int argc, char *argv[])
     int num_jobs = 1000;           // Default number of jobs
     int cpu_affinity = -1;         // Default: no CPU affinity
     int mlockall_flag = 0;         // Default: no memory locking
-    char sched_policy[10] = "rr";  // Default scheduler
+    char sched_policy[10] = "fifo";  // Default scheduler
     int nice_value = 0;            // Default nice value
     int rt_priority = 50;          // Default RT priority
     long runtime_us = 5000;        // Default runtime for SCHED_DEADLINE (50% of period)
@@ -378,7 +399,7 @@ int main(int argc, char *argv[])
     for (int k = 0; k < num_jobs; k++)
     {
         // Perform computation
-        perform_computation2(computation_amount);
+        perform_computation_fcs(computation_amount);
 
         // Measure response time
         struct timespec ts_current;
