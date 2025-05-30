@@ -57,3 +57,26 @@ Will result in EINVAL or unpredictable behavior.
 
     Avoid memory pressure, disable swap, lock memory (mlockall).
 
+To configure stress-ng to simulate real-world load for a drone control system, you must first consider which subsystems the drone's control software stresses most during operation. Typical loads include:
+
+    CPU computation (for real-time decision-making, control loops)
+
+    Memory usage (path planning, map storage): For map handling, sensor fusion, or large buffers:
+
+    I/O and IPC (sensor input, communication between modules): Drone systems often use shared memory or sockets: Simulates inter-process communication with pipes, message queues, and sockets.
+
+    Thread/process scheduling (real-time task execution):Exercises the scheduler to simulate real-time thread contention.
+
+Run CPU, memory, and I/O stressors simultaneously:
+stress-ng --cpu 4 --vm 2 --hdd 1 --timeout 120s
+
+This combo hits CPU, memory, disk, and communication subsystems for a full-system stress profile.
+stress-ng \
+  --cpu 4 --cpu-method matrixprod \
+  --vm 2 --vm-bytes 75% --vm-method all --verify\
+  --hdd 1 --hdd-bytes 1G \
+  --pipe 4 --mq 2 --sock 2 \
+  --sched 2 \
+  --timeout 300s
+
+--cpu-method matrixprod mimics linear algebra-heavy workloads common in drone path planning or control systems.
