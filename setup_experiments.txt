@@ -6,7 +6,8 @@ for cpu in /sys/devices/system/cpu/cpu[0-3]*; do
 done
 
 For a quadcopter flight control system, using SCHED_DEADLINE is well-suited for deterministic timing of control loops. The parameters depend on the control frequency, CPU budget, and deadline requirements of your flight control software.
-🧩 Assumptions
+
+Assumptions
 
 Let’s say your flight control loop runs at 500 Hz (i.e., every 2 ms):
 
@@ -22,7 +23,7 @@ attr.sched_period   = 2000000;   // 2 ms
 
 This gives the task a 20% CPU budget (400 µs every 2 ms), which leaves headroom for other tasks and helps prevent overload.
 
-🎯 Guidelines for Choosing Parameters
+Guidelines for Choosing Parameters
 1. Measure Worst-Case Execution Time (WCET)
 
 Use tools like ftrace, perf, or cyclictest to benchmark your flight controller loop.
@@ -36,7 +37,7 @@ Sum of all runtime/period fractions across all SCHED_DEADLINE tasks must not exc
 
 Will result in EINVAL or unpredictable behavior.
 
-🚁 Suggested Configs by Control Loop Frequency
+Suggested Configs by Control Loop Frequency
 | Loop Rate | Period (ns) | Runtime (ns) | Deadline (ns) | Budget % |
 | --------- | ----------- | ------------ | ------------- | -------- |
 | 1000 Hz   | 1,000,000   | 200,000      | 1,000,000     | 20%      |
@@ -47,7 +48,7 @@ Will result in EINVAL or unpredictable behavior.
 
 ➜  paper_linux sudo ./a.out -j 10000 -c 1500 -r 99 -R 550 -D 2000 -p 2000 -o test_deadline.txt
 
-⚠️ Flight-Critical Considerations
+light-Critical Considerations
 
     Pin tasks to isolated CPUs with isolcpus/cpuset.
 
