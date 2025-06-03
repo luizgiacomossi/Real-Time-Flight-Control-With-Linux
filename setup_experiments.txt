@@ -9,7 +9,7 @@ For a quadcopter flight control system, using SCHED_DEADLINE is well-suited for 
 
 Assumptions
 
-Let’s say your flight control loop runs at 500 Hz (i.e., every 2 ms):
+Let’s say the flight control loop runs at 500 Hz (i.e., every 2 ms):
 
     Period (P) = 2 ms = 2,000,000 ns
 
