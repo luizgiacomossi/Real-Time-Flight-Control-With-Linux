@@ -1,5 +1,7 @@
 # to setup max freq to all cpus and mode performance to avoid cpu throtling 
-
+# Set RT runtime to unlimited to avoid throttling of real-time tasks
+echo -1 | sudo tee /proc/sys/kernel/sched_rt_runtime_us
+# Set all CPUs to max frequency and performance mode
 for cpu in /sys/devices/system/cpu/cpu[0-3]*; do
     echo 2400000 | sudo tee $cpu/cpufreq/scaling_min_freq
     echo performance | sudo tee $cpu/cpufreq/scaling_governor

@@ -410,12 +410,12 @@ int main(int argc, char *argv[])
                           (ts_current.tv_nsec - ts_next.tv_nsec) / 1000L;
 
         // Print current response time
-        printf("Job %d: Response time = %ld us\n", k, resptimes_us[k]);
+        //printf("Job %d: Response time = %ld us\n", k, resptimes_us[k]);
 
         // Calculate next activation time
         ts_next.tv_nsec += period_us * 1000; // Convert us to ns
         while (ts_next.tv_nsec >= 1000000000L)
-        { // Handle nanosecond overflow
+        { // Handle nanosecond overflowf
             ts_next.tv_sec++;
             ts_next.tv_nsec -= 1000000000L;
         }
