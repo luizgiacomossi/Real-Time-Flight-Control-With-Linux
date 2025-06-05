@@ -83,3 +83,50 @@ stress-ng \
   --timeout 300s
 
 --cpu-method matrixprod mimics linear algebra-heavy workloads common in drone path planning or control systems.
+
+
+IMU for the Crazyflie:
+
+    Raw IMU sensor (BMI088) sampling: Up to 4 kHz.
+    Internal flight controller processing and PID loop: 2 kHz.
+    Data streaming over radio (e.g., to a PC): Limited to 100 Hz.
+    
+Key Takeaways for this Setup:
+https://invensense.tdk.com/products/motion-tracking/6-axis/mpu-6050/
+
+400kHz Fast Mode I²C or up to 20MHz SPI (MPU-6000 only) serial host interfaces
+    Control Loop (500 Hz / 2 ms): This is a respectable frequency for a
+     drone control loop, offering good responsiveness.
+    IMU Sampling (1000 Hz / 1 ms): You will be acquiring new IMU data twice as fast as your control loop runs. This gives you options:
+        You can simply use the latest IMU reading available at the start of your 500 Hz control loop.
+        You can, and often should, average the two (or more, if sampling higher) IMU readings received within each 2 ms control loop period. This acts as a low-pass filter, reducing high-frequency noise from the IMU.
+    Synchronization: It's important that your code ensures the IMU data acquisition is synchronized with or slightly ahead of your control loop's execution. You need to make sure that a fresh IMU reading is ready when your 500 Hz control loop starts its calculations.
+
+
+    in pixhawk 4
+    ICM-20689 and/or BMI055
+
+
+
+    ✅ Updated latency breakdown at 24 MHz
+
+Assuming an IMU read of 14 bytes (typical for 6-axis + timestamp):
+| Stage                        | Approx. Latency  |
+| ---------------------------- | ---------------- |
+| `ioctl()` setup              | \~30–80 µs       |
+| Context switch (user→kernel) | \~20–50 µs       |
+| **SPI transfer @24 MHz**     | **\~4.7 µs**     |
+| Context switch (kernel→user) | \~20–50 µs       |
+| **Total round-trip**         | **\~100–250 µs** |
+
+Even doubling the SPI speed from 10 MHz to 24 MHz only saves a few microseconds per transaction unless you're transferring large blocks.
+
+This includes:
+
+    System call overhead (e.g., ioctl)
+
+    Context switching (user ↔ kernel)
+
+    SPI bus transfer time (depends on frequency and message size)
+
+    Optional: GPIO toggle time (if using manual CS)

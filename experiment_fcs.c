@@ -14,23 +14,36 @@
 #include <stdint.h>
 #include "fcs_drone.h" // Include your flight control system header
 
-/*
-// Scheduling updateFlightControlttr {
-    uint32_t size;
-    uint32_t sched_policy;
-    uint64_t sched_flags;
-    int32_t sched_nice;
-    uint32_t sched_priority;
-    uint64_t sched_runtime;
-    uint64_t sched_deadline;
-    uint64_t sched_period;
-}
-*/
-// Wrapper for sched_setattr syscall
-// static int sched_setattr(pid_t pid, const struct sched_attr *attr, unsigned int flags) {
-//    return syscall(SYS_sched_setattr, pid, attr, flags);
-//}
 
+// --------------------- Functions for simulating sensor data acquisition ----------------------------
+
+#define LOOP_PERIOD_NS           4000000L   // 4 ms = 250 Hz (main control loop period)
+#define SENSOR_LATENCY_NS         500000L   // 0.5 ms (estimated sensor data latency)
+#define IMU_SAMPLING_RATE_HZ          2000  // 2 kHz (desired IMU data rate)
+#define IMU_SAMPLING_INTERVAL_NS (1000000000L / IMU_SAMPLING_RATE_HZ) // 0.5 ms (calculated IMU sampling interval)
+#define IMU_SPI_DELAY_NS (1000000L / 24) // 41.67 us (SPI data acquisition delay for 24 MHz clock)
+/*
+Control loop executes every 1 ms (250 Hz).
+
+IMU is sampled every 0.5 ms (2 kHz).
+
+Estimated latency fits neatly within 
+a single IMU sample interval, ensuring o
+ne fresh sample is always available before each control loop step.
+
+*/
+
+typedef struct {
+    double accel[3]; // m/s^2
+    double gyro[3];  // rad/s
+} IMUData;
+
+// Box-Muller transform to generate Gaussian noise
+double gaussian_noise(double mean, double std_dev) {
+    double u1 = (rand() + 1.0) / (RAND_MAX + 2.0);
+    double u2 = (rand() + 1.0) / (RAND_MAX + 2.0);
+    return mean + std_dev * sqrt(-2.0 * log(u1)) * cos(2 * M_PI * u2);
+}
 
 void simulate_data_acquisition(int samples, long delay_ns) {
     struct timespec req;
@@ -46,6 +59,46 @@ void simulate_data_acquisition(int samples, long delay_ns) {
     }
 }
     
+
+void simulate_imu_read(IMUData* data) {
+    // Simulate IMU SPI data aquisition delay
+
+    /*
+    Assuming an IMU read of 14 bytes (typical for 6-axis + timestamp):
+        | Stage                        | Approx. Latency  |
+        | ---------------------------- | ---------------- |
+        | `ioctl()` setup              | \~30–80 µs       |
+        | Context switch (user→kernel) | \~20–50 µs       |
+        | **SPI transfer @24 MHz**     | **\~4.7 µs**     |
+        | Context switch (kernel→user) | \~20–50 µs       |
+        | **Total round-trip**         | **\~100–250 µs** |
+    
+    */
+
+    // total delay for SPI read is around 150 to 250 us
+    // Simulate SPI data acquisition delay with random latency between 150 and 250 us
+    //double random_delay_us = 150 + (rand() % 101); // Random delay between 150 and 250 us
+    // This simulates the time taken to read data from the IMU sensor
+    // Set a fixed delay of 150 ms for simulation purposes
+    simulate_data_acquisition(1, 150000);
+
+
+
+    //struct timespec sensor_delay = {0, SENSOR_LATENCY_NS};
+    //nanosleep(&sensor_delay, NULL);
+
+    // Simulate accelerometer (resting on flat surface, Z=9.81 m/s²)
+    data->accel[0] = gaussian_noise(0.0, 0.02);
+    data->accel[1] = gaussian_noise(0.0, 0.02);
+    data->accel[2] = gaussian_noise(9.81, 0.02);
+
+    // Simulate gyroscope (stationary)
+    data->gyro[0] = gaussian_noise(0.0, 0.001);
+    data->gyro[1] = gaussian_noise(0.0, 0.001);
+    data->gyro[2] = gaussian_noise(0.0, 0.001);
+}
+
+// --------------------- Functions for simulating sensor data acquisition ----------------------------
 
 // Function for performing computations (busy wait)
 void perform_computation(long computation_amount)
@@ -184,6 +237,9 @@ int main(int argc, char *argv[])
     long runtime_us = 5000;        // Default runtime for SCHED_DEADLINE (50% of period)
     long deadline_us = 0;          // Default deadline (0 means use period)
     char output_file[256] = "";    // Default: no file output
+
+    IMUData imu;
+    srand(123); // seed RNG
 
     // Parse command-line arguments
     struct option long_options[] = {
@@ -398,8 +454,19 @@ int main(int argc, char *argv[])
     // Main job loop
     for (int k = 0; k < num_jobs; k++)
     {
+
+        // Simulate data acquisition using SPI communication - 24 MHz clock
+        // But raspberry pi 5 has a maximum SPI clock of 125 MHz, so we use a delay of 41.67 us  
+        // 6 byte SPI read latency in user space is around 150 to 250 us   
+        simulate_imu_read(&imu);
+
+        // Print simulated data
+        //printf("Accel: [%.3f %.3f %.3f] m/s^2  ", imu.accel[0], imu.accel[1], imu.accel[2]);
+        //printf("Gyro: [%.4f %.4f %.4f] rad/s\n", imu.gyro[0], imu.gyro[1], imu.gyro[2]);
+
         // Perform computation
         perform_computation_fcs(computation_amount);
+
 
         // Measure response time
         struct timespec ts_current;
