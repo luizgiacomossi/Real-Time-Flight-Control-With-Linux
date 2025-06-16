@@ -1,0 +1,58 @@
+
+---------------------------------------------------------
+File: sched_deadline_prio_99_nostress.log
+Scheduler: SCHED_DEADLINE
+Parameters: runtime=100000,period=200000,deadline=200000
+Stress Condition: No Stress
+Mean: 15.3 µs, Median (P50): 14.9 µs, StdDev: 4.2 µs
+P90: 20.1 µs, P99: 25.5 µs, Max: 35.8 µs
+---------------------------------------------------------
+File: sched_deadline_prio_99_stress.log
+Scheduler: SCHED_DEADLINE
+Parameters: runtime=100000,period=200000,deadline=200000
+Stress Condition: stress
+Mean: 25.8 µs, Median (P50): 24.1 µs, StdDev: 8.9 µs
+P90: 35.2 µs, P99: 50.1 µs, Max: 120.4 µs
+---------------------------------------------------------
+File: sched_fifo_prio_99_nostress.log
+Scheduler: SCHED_FIFO
+Parameters: prio=99
+Stress Condition: No Stress
+Mean: 18.1 µs, Median (P50): 17.5 µs, StdDev: 5.1 µs
+P90: 24.3 µs, P99: 30.7 µs, Max: 45.2 µs
+---------------------------------------------------------
+File: sched_fifo_prio_99_stress.log
+Scheduler: SCHED_FIFO
+Parameters: prio=99
+Stress Condition: stress
+Mean: 150.5 µs, Median (P50): 145.2 µs, StdDev: 30.2 µs
+P90: 190.8 µs, P99: 250.6 µs, Max: 500.9 µs
+---------------------------------------------------------
+File: sched_rr_prio_99_nostress.log
+Scheduler: SCHED_RR
+Parameters: prio=99
+Stress Condition: No Stress
+Mean: 20.4 µs, Median (P50): 19.8 µs, StdDev: 6.3 µs
+P90: 28.1 µs, P99: 35.4 µs, Max: 55.1 µs
+---------------------------------------------------------
+File: sched_rr_prio_99_stress.log
+Scheduler: SCHED_RR
+Parameters: prio=99
+Stress Condition: stress
+Mean: 180.2 µs, Median (P50): 175.9 µs, StdDev: 35.8 µs
+P90: 220.5 µs, P99: 300.1 µs, Max: 621.3 µs
+---------------------------------------------------------
+File: sched_other_nostress.log
+Scheduler: SCHED_OTHER
+Parameters: nice=0
+Stress Condition: No Stress
+Mean: 22.5 µs, Median (P50): 21.9 µs, StdDev: 7.5 µs
+P90: 31.2 µs, P99: 40.8 µs, Max: 80.4 µs
+---------------------------------------------------------
+File: sched_other_stress.log
+Scheduler: SCHED_OTHER
+Parameters: nice=0
+Stress Condition: stress
+Mean: 3500.7 µs, Median (P50): 3400.1 µs, StdDev: 500.6 µs
+P90: 4100.2 µs, P99: 5200.8 µs, Max: 8900.2 µs
+---------------------------------------------------------
