@@ -458,7 +458,7 @@ int main(int argc, char *argv[])
         // Simulate data acquisition using SPI communication - 24 MHz clock
         // But raspberry pi 5 has a maximum SPI clock of 125 MHz, so we use a delay of 41.67 us  
         // 6 byte SPI read latency in user space is around 150 to 250 us   
-        simulate_imu_read(&imu);
+        //simulate_imu_read(&imu);
 
         // Print simulated data
         //printf("Accel: [%.3f %.3f %.3f] m/s^2  ", imu.accel[0], imu.accel[1], imu.accel[2]);
