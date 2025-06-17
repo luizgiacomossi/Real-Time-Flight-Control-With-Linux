@@ -36,30 +36,31 @@ set(gca, 'YScale', 'log')
 
 % Subplot 1: Other - No Stress
 subplot(1, 2, 1);
-plot_box_subplot(all_data(other_no_stress_indices), labels_other, 'Other Scheduler – No Stress', [0.2 0.6 0.8]);
-set(gca, 'YScale', 'log')
-
-% Subplot 2: Other - Stress
-subplot(1, 2, 2);
-plot_box_subplot(all_data(other_stress_indices), labels_other, 'Other Scheduler – Stress', [0.8 0.2 0.2]);
+plot_box_subplot(all_data(other_no_stress_indices), labels_other, 'Other Scheduler – No Stress', [0.2 0.6 0.8], 0);
 set(gca, 'YScale', 'log')
 
 %% Figure 2: All other schedulers (excluding 'Other')
+
 figure('Position', [100, 100, 800, 600]);
-set(gca, 'YScale', 'log')
+%set(gca, 'YScale', 'log')
+
+% Subplot 2: Other - Stress
+subplot(1, 3, 1);
+plot_box_subplot(all_data(other_stress_indices), labels_other, 'Other Scheduler – Stress', [0.8 0.2 0.2], 0);
+%set(gca, 'YScale', 'log')
 
 % Subplot 1: Rest - No Stress
-subplot(1, 2, 1);
-plot_box_subplot(all_data(rest_no_stress_indices), labels_rest, 'RT Schedulers – No Stress', [0.2 0.6 0.2]);
-set(gca, 'YScale', 'log')
+subplot(1, 3, 2);
+plot_box_subplot(all_data(rest_no_stress_indices), labels_rest, 'RT Schedulers – No Stress', [0.2 0.6 0.2] , 0);
+%set(gca, 'YScale', 'log')
 
 % Subplot 2: Rest - Stress
-subplot(1, 2, 2);
-plot_box_subplot(all_data(rest_stress_indices), labels_rest, 'RT Schedulers – Stress', [0.8 0.2 0.2]);
-set(gca, 'YScale', 'log')
+subplot(1, 3, 3);
+plot_box_subplot(all_data(rest_stress_indices), labels_rest, 'RT Schedulers – Stress', [0.8 0.2 0.2], 1);
+%set(gca, 'YScale', 'log')
 
 %% FUNCTION for subplots
-function plot_box_subplot(data_cells, labels, title_str, color)
+function plot_box_subplot(data_cells, labels, title_str, color, linear)
     values = vertcat(data_cells{:});
     group = arrayfun(@(i) repmat(i, length(data_cells{i}), 1), 1:numel(data_cells), 'UniformOutput', false);
     group = vertcat(group{:});
@@ -75,8 +76,12 @@ function plot_box_subplot(data_cells, labels, title_str, color)
         'Widths', 0.5)
     
     xtickangle(45)
-    yticks([100 125 150 156 160 175 200 225 250 300 500 1000 2000 4000 10000])
-    set(gca, 'YScale', 'log', 'fontName', fontName, 'FontSize', fontSize)
+    if linear
+        set(gca, 'YScale', 'linear', 'fontName', fontName, 'FontSize', fontSize)
+    else
+        yticks([2 5 10 25 50 100 200 500 1000 2000 4000 10000])
+        set(gca, 'YScale', 'log', 'fontName', fontName, 'FontSize', fontSize)
+    end
     title(title_str, 'FontSize', fontSize, 'Interpreter', 'latex', 'FontName', fontName)
     ylabel('Latency ($\mu$s)', 'Interpreter', 'latex', 'FontSize', 20, 'FontName', fontName);
     grid on
