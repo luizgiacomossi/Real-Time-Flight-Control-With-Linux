@@ -55,7 +55,7 @@ STRESS_NG_ARGS="--cpu 4 --cpu-method matrixprod \
                 --vm 2 --vm-bytes 75% --vm-method all --verify \
                 --hdd 1 --hdd-bytes 1G \
                 --pipe 4 --mq 2 --sock 2 \
-                --sched 2 \
+                --sched fifo \
                 --timeout ${STRESS_NG_TIMEOUT}"
 
 # Output directory
