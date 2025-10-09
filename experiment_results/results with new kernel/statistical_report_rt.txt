@@ -1,0 +1,246 @@
+--- Real-time Scheduling Experiment Statistical Report ---
+Generated on: Fri Aug 15 15:16:48 CEST 2025
+Data from directory: experiment_results
+---------------------------------------------------------
+
+---------------------------------------------------------
+File: deadline_R400_D4000_no_stress.txt
+  Scheduler: SCHED_DEADLINE
+  Parameters: Runtime: 400µs, Period/Deadline: 4µs
+  Stress Condition: No Stress
+  Count: 10000
+  Sum: 42020.00 µs
+  Mean: 4.20 µs
+  Median (P50): 4.00 µs
+  Min: 4.00 µs
+  Max: 96.00 µs
+  StdDev: 1.86 µs
+  P90: 5.00 µs
+  P99: 7.00 µs
+
+---------------------------------------------------------
+File: deadline_R400_D4000_stress.txt
+  Scheduler: SCHED_DEADLINE
+  Parameters: Runtime: 400µs, Period/Deadline: 4µs
+  Stress Condition: stress
+  Count: 10000
+  Sum: 441641.00 µs
+  Mean: 44.16 µs
+  Median (P50): 33.00 µs
+  Min: 4.00 µs
+  Max: 209.00 µs
+  StdDev: 29.57 µs
+  P90: 90.00 µs
+  P99: 137.00 µs
+
+---------------------------------------------------------
+File: deadline_R800_D4000_no_stress.txt
+  Scheduler: SCHED_DEADLINE
+  Parameters: Runtime: 800µs, Period/Deadline: 4µs
+  Stress Condition: No Stress
+  Count: 10000
+  Sum: 42115.00 µs
+  Mean: 4.21 µs
+  Median (P50): 4.00 µs
+  Min: 4.00 µs
+  Max: 84.00 µs
+  StdDev: 2.00 µs
+  P90: 4.00 µs
+  P99: 8.00 µs
+
+---------------------------------------------------------
+File: deadline_R800_D4000_stress.txt
+  Scheduler: SCHED_DEADLINE
+  Parameters: Runtime: 800µs, Period/Deadline: 4µs
+  Stress Condition: stress
+  Count: 10000
+  Sum: 323018.00 µs
+  Mean: 32.30 µs
+  Median (P50): 27.00 µs
+  Min: 3.00 µs
+  Max: 197.00 µs
+  StdDev: 18.75 µs
+  P90: 51.00 µs
+  P99: 116.00 µs
+
+---------------------------------------------------------
+File: fifo_p50_no_stress.txt
+  Scheduler: SCHED_FIFO
+  Parameters: Priority: 50
+  Stress Condition: No Stress
+  Count: 10000
+  Sum: 52894.00 µs
+  Mean: 5.29 µs
+  Median (P50): 4.00 µs
+  Min: 3.00 µs
+  Max: 135.00 µs
+  StdDev: 4.55 µs
+  P90: 7.00 µs
+  P99: 21.00 µs
+
+---------------------------------------------------------
+File: fifo_p50_stress.txt
+  Scheduler: SCHED_FIFO
+  Parameters: Priority: 50
+  Stress Condition: stress
+  Count: 10000
+  Sum: 360656.00 µs
+  Mean: 36.07 µs
+  Median (P50): 28.00 µs
+  Min: 6.00 µs
+  Max: 160.00 µs
+  StdDev: 23.78 µs
+  P90: 68.00 µs
+  P99: 123.00 µs
+
+---------------------------------------------------------
+File: fifo_p99_no_stress.txt
+  Scheduler: SCHED_FIFO
+  Parameters: Priority: 99
+  Stress Condition: No Stress
+  Count: 10000
+  Sum: 41851.00 µs
+  Mean: 4.19 µs
+  Median (P50): 4.00 µs
+  Min: 3.00 µs
+  Max: 100.00 µs
+  StdDev: 1.90 µs
+  P90: 4.00 µs
+  P99: 7.00 µs
+
+---------------------------------------------------------
+File: fifo_p99_stress.txt
+  Scheduler: SCHED_FIFO
+  Parameters: Priority: 99
+  Stress Condition: stress
+  Count: 10000
+  Sum: 313293.00 µs
+  Mean: 31.33 µs
+  Median (P50): 25.00 µs
+  Min: 5.00 µs
+  Max: 224.00 µs
+  StdDev: 21.61 µs
+  P90: 50.00 µs
+  P99: 130.00 µs
+
+---------------------------------------------------------
+File: other_n-19_no_stress.txt
+  Scheduler: SCHED_OTHER
+  Parameters: Nice: -19
+  Stress Condition: No Stress
+  Count: 10000
+  Sum: 647888.00 µs
+  Mean: 64.79 µs
+  Median (P50): 58.00 µs
+  Min: 3.00 µs
+  Max: 2779.00 µs
+  StdDev: 88.06 µs
+  P90: 60.00 µs
+  P99: 90.00 µs
+
+---------------------------------------------------------
+File: other_n-19_stress.txt
+  Scheduler: SCHED_OTHER
+  Parameters: Nice: -19
+  Stress Condition: stress
+  Count: 10000
+  Sum: 1108131.00 µs
+  Mean: 110.81 µs
+  Median (P50): 85.00 µs
+  Min: 3.00 µs
+  Max: 4351.00 µs
+  StdDev: 186.65 µs
+  P90: 124.00 µs
+  P99: 669.00 µs
+
+---------------------------------------------------------
+File: other_n0_no_stress.txt
+  Scheduler: SCHED_OTHER
+  Parameters: Nice: 0
+  Stress Condition: No Stress
+  Count: 10000
+  Sum: 596384.00 µs
+  Mean: 59.64 µs
+  Median (P50): 58.00 µs
+  Min: 4.00 µs
+  Max: 2570.00 µs
+  StdDev: 36.78 µs
+  P90: 59.00 µs
+  P99: 66.00 µs
+
+---------------------------------------------------------
+File: other_n0_stress.txt
+  Scheduler: SCHED_OTHER
+  Parameters: Nice: 0
+  Stress Condition: stress
+  Count: 10000
+  Sum: 1968359.00 µs
+  Mean: 196.84 µs
+  Median (P50): 97.00 µs
+  Min: 5.00 µs
+  Max: 9015.00 µs
+  StdDev: 414.98 µs
+  P90: 290.00 µs
+  P99: 2420.00 µs
+
+---------------------------------------------------------
+File: rr_p50_no_stress.txt
+  Scheduler: SCHED_RR
+  Parameters: Priority: 50
+  Stress Condition: No Stress
+  Count: 10000
+  Sum: 43531.00 µs
+  Mean: 4.35 µs
+  Median (P50): 4.00 µs
+  Min: 3.00 µs
+  Max: 76.00 µs
+  StdDev: 2.53 µs
+  P90: 5.00 µs
+  P99: 13.00 µs
+
+---------------------------------------------------------
+File: rr_p50_stress.txt
+  Scheduler: SCHED_RR
+  Parameters: Priority: 50
+  Stress Condition: stress
+  Count: 10000
+  Sum: 440943.00 µs
+  Mean: 44.09 µs
+  Median (P50): 32.00 µs
+  Min: 2.00 µs
+  Max: 225.00 µs
+  StdDev: 31.75 µs
+  P90: 92.00 µs
+  P99: 152.00 µs
+
+---------------------------------------------------------
+File: rr_p99_no_stress.txt
+  Scheduler: SCHED_RR
+  Parameters: Priority: 99
+  Stress Condition: No Stress
+  Count: 10000
+  Sum: 41361.00 µs
+  Mean: 4.14 µs
+  Median (P50): 4.00 µs
+  Min: 3.00 µs
+  Max: 51.00 µs
+  StdDev: 1.15 µs
+  P90: 4.00 µs
+  P99: 6.00 µs
+
+---------------------------------------------------------
+File: rr_p99_stress.txt
+  Scheduler: SCHED_RR
+  Parameters: Priority: 99
+  Stress Condition: stress
+  Count: 10000
+  Sum: 410806.00 µs
+  Mean: 41.08 µs
+  Median (P50): 31.00 µs
+  Min: 7.00 µs
+  Max: 182.00 µs
+  StdDev: 27.01 µs
+  P90: 82.00 µs
+  P99: 122.00 µs
+
+---
