@@ -123,7 +123,7 @@ int main() {
         {.position = {0.0f, 0.0f, 3.0f}, .yaw = 0.0f}, // WP1: takeoff
         {.position = {3.0f, 0.0f, 3.0f}, .yaw = 0.0f}, // WP2: fly east
         {.position = {3.0f, 3.0f, 5.0f}, .yaw = 0.0f}, // WP3: fly north & climb
-        {.position = {0.0f, 0.0f, 10.0f}, .yaw = 0.0f}, // WP4: return & descend
+        {.position = {0.0f, 0.0f, 1.0f}, .yaw = 0.0f}, // WP4: return & descend
     };
     int num_waypoints = 4;
     int wp_idx = 0;
