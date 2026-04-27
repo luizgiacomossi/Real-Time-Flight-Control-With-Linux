@@ -35,7 +35,7 @@ for i in "${!POLICIES[@]}"; do
     name="${NAMES[$i]}"
     
     echo "Running idle config: $name"
-    sudo ./fcs_closed_loop -p 4000 -c 1000 -j 3750 -a 0 -m -s "$pol" -n "$n" -r "$r" -R "$R" -D "$D" -o "$OUT_DIR/flight_log_${KERNEL_NAME}_${name}_idle.csv"
+    sudo ./fcs_closed_loop -p 4000 -c 1000 -j 7500 -a 0 -m -s "$pol" -n "$n" -r "$r" -R "$R" -D "$D" -o "$OUT_DIR/flight_log_${KERNEL_NAME}_${name}_idle.csv"
 done
 
 echo "Starting stress-ng..."
@@ -44,7 +44,7 @@ stress-ng \
   --vm 2 --vm-bytes 75% --vm-method all --verify\
   --hdd 1 --hdd-bytes 1G \
   --pipe 4 --mq 2 --sock 2 \
-  --sched 2 \
+  --switch 2 \
   --timeout 3000s & STRESS_PID=$!
 
 sleep 5
@@ -59,7 +59,7 @@ for i in "${!POLICIES[@]}"; do
     name="${NAMES[$i]}"
     
     echo "Running stressed config: $name"
-    sudo ./fcs_closed_loop -p 4000 -c 1000 -j 3750 -a 0 -m -s "$pol" -n "$n" -r "$r" -R "$R" -D "$D" -o "$OUT_DIR/flight_log_${KERNEL_NAME}_${name}_stress.csv"
+    sudo ./fcs_closed_loop -p 4000 -c 1000 -j 7500 -a 0 -m -s "$pol" -n "$n" -r "$r" -R "$R" -D "$D" -o "$OUT_DIR/flight_log_${KERNEL_NAME}_${name}_stress.csv"
 done
 
 echo "Stopping stress-ng..."

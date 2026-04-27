@@ -52,40 +52,38 @@ typedef struct {
   Attitude desired_att;
 } ControlOutputs;
 
-void initializeController(ControllerGains *gains);
+static inline void initializeController(ControllerGains *gains);
 
-void positionController(const Vector3 *current_pos, const Vector3 *current_vel,
+static inline void positionController(const Vector3 *current_pos, const Vector3 *current_vel,
                         const Vector3 *reference_pos,
                         const ControllerGains *gains, Vector3 *output_force);
 
-void controlAllocator1(const Vector3 *force, float reference_yaw,
+static inline void controlAllocator1(const Vector3 *force, float reference_yaw,
                        Attitude *desired_attitude, float *total_thrust);
 
-void attitudeController(const Attitude *current_attitude,
+static inline void attitudeController(const Attitude *current_attitude,
                         const AngularVelocity *current_angular,
                         const Attitude *desired_attitude,
                         const ControllerGains *gains, Vector3 *output_torque);
 
-void controlAllocator2(float thrust, const Vector3 *torque,
+static inline void controlAllocator2(float thrust, const Vector3 *torque,
                        float motor_distance, float thrust_coefficient,
                        float torque_coefficient, MotorCommands *motor_commands);
 
-void updateFlightControl(const QuadcopterState *current_state,
+static inline void updateFlightControl(const QuadcopterState *current_state,
                          const Reference *reference,
                          const ControllerGains *gains, float motor_distance,
                          float thrust_coefficient, float torque_coefficient,
                          ControlOutputs *control_outputs,
                          MotorCommands *motor_commands);
 
-void updateCurrentState(QuadcopterState *state, const Vector3 *new_position,
+static inline void updateCurrentState(QuadcopterState *state, const Vector3 *new_position,
                         const Vector3 *new_velocity,
                         const Attitude *new_attitude,
                         const AngularVelocity *new_angular);
 
-#endif // QUADCOPTER_CONTROL_H
-
 // Initialize controller with default gains
-void initializeController(ControllerGains *gains) {
+static inline void initializeController(ControllerGains *gains) {
   // Position controller gains
   gains->Kp_pos = 1.0f;
   gains->Kd_pos = 1.5f;
@@ -100,7 +98,7 @@ void initializeController(ControllerGains *gains) {
 }
 
 // Position controller: calculate desired force based on position error
-void positionController(const Vector3 *current_pos, const Vector3 *current_vel,
+static inline void positionController(const Vector3 *current_pos, const Vector3 *current_vel,
                         const Vector3 *reference_pos,
                         const ControllerGains *gains, Vector3 *output_force) {
   // Calculate position error
@@ -120,7 +118,7 @@ void positionController(const Vector3 *current_pos, const Vector3 *current_vel,
 }
 
 // Control allocator 1: convert horizontal forces to desired attitude
-void controlAllocator1(const Vector3 *force, float reference_yaw,
+static inline void controlAllocator1(const Vector3 *force, float reference_yaw,
                        Attitude *desired_attitude, float *total_thrust) {
   // Calculate total thrust
   *total_thrust =
@@ -142,7 +140,7 @@ void controlAllocator1(const Vector3 *force, float reference_yaw,
 }
 
 // Attitude controller: calculate desired torque based on attitude error
-void attitudeController(const Attitude *current_attitude,
+static inline void attitudeController(const Attitude *current_attitude,
                         const AngularVelocity *current_angular,
                         const Attitude *desired_attitude,
                         const ControllerGains *gains, Vector3 *output_torque) {
@@ -169,7 +167,7 @@ void attitudeController(const Attitude *current_attitude,
 }
 
 // Control allocator 2: convert thrust and torque to motor commands
-void controlAllocator2(float thrust, const Vector3 *torque,
+static inline void controlAllocator2(float thrust, const Vector3 *torque,
                        float motor_distance, float thrust_coefficient,
                        float torque_coefficient,
                        MotorCommands *motor_commands) {
@@ -202,7 +200,7 @@ void controlAllocator2(float thrust, const Vector3 *torque,
 }
 
 // Main control function that ties everything together
-void updateFlightControl(const QuadcopterState *current_state,
+static inline void updateFlightControl(const QuadcopterState *current_state,
                          const Reference *reference,
                          const ControllerGains *gains, float motor_distance,
                          float thrust_coefficient, float torque_coefficient,
@@ -228,7 +226,7 @@ void updateFlightControl(const QuadcopterState *current_state,
                     motor_commands);
 }
 
-void updateCurrentState(QuadcopterState *state, const Vector3 *new_position,
+static inline void updateCurrentState(QuadcopterState *state, const Vector3 *new_position,
                         const Vector3 *new_velocity,
                         const Attitude *new_attitude,
                         const AngularVelocity *new_angular) {
@@ -237,3 +235,5 @@ void updateCurrentState(QuadcopterState *state, const Vector3 *new_position,
   state->attitude = *new_attitude;
   state->angular = *new_angular;
 }
+
+#endif // QUADCOPTER_CONTROL_H

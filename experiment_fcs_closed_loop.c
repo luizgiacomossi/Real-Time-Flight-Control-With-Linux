@@ -123,6 +123,9 @@ int main(int argc, char *argv[]) {
 
     // Allocate memory for logs
     double *log_time = malloc(num_jobs * sizeof(double));
+    double *log_x = malloc(num_jobs * sizeof(double));
+    double *log_y = malloc(num_jobs * sizeof(double));
+    double *log_z = malloc(num_jobs * sizeof(double));
     double *log_ref_yaw = malloc(num_jobs * sizeof(double));
     double *log_yaw = malloc(num_jobs * sizeof(double));
     double *log_roll = malloc(num_jobs * sizeof(double));
@@ -134,7 +137,7 @@ int main(int argc, char *argv[]) {
     double *log_dt = malloc(num_jobs * sizeof(double));
     double *log_latency = malloc(num_jobs * sizeof(double));
 
-    if (!log_time || !log_ref_yaw || !log_yaw || !log_roll || !log_pitch || 
+    if (!log_time || !log_x || !log_y || !log_z || !log_ref_yaw || !log_yaw || !log_roll || !log_pitch || 
         !log_F || !log_tau_x || !log_tau_y || !log_tau_z || !log_dt || !log_latency) {
         perror("Failed to allocate memory for logs");
         return EXIT_FAILURE;
@@ -201,6 +204,48 @@ int main(int argc, char *argv[]) {
         .yaw = 0.0f
     };
 
+    // Load waypoints from file
+    #define MAX_WP 64
+    Reference waypoints[MAX_WP];
+    int num_waypoints = 0;
+
+    FILE *fwp = fopen("waypoints_tests.txt", "r");
+    if (!fwp) {
+      fprintf(stderr, "Error: cannot open waypoints_tests.txt\n");
+      return EXIT_FAILURE;
+    }
+    char line[128];
+    while (fgets(line, sizeof(line), fwp) && num_waypoints < MAX_WP) {
+      if (line[0] == '#' || line[0] == '\n' || line[0] == '\r') continue;
+      float wx, wy, wz;
+      if (sscanf(line, "%f %f %f", &wx, &wy, &wz) == 3) {
+        waypoints[num_waypoints].position.x = wx;
+        waypoints[num_waypoints].position.y = wy;
+        waypoints[num_waypoints].position.z = wz;
+        waypoints[num_waypoints].yaw        = 0.0f;
+        num_waypoints++;
+      }
+    }
+    fclose(fwp);
+
+    if (num_waypoints == 0) {
+      fprintf(stderr, "Error: no valid waypoints found in waypoints_tests.txt\n");
+      return EXIT_FAILURE;
+    }
+    printf("Loaded %d waypoints from waypoints_tests.txt\n", num_waypoints);
+    int wp_idx = 0;
+    reference = waypoints[0];
+
+    // Allocate memory for extra reference logs
+    double *log_ref_x = malloc(num_jobs * sizeof(double));
+    double *log_ref_y = malloc(num_jobs * sizeof(double));
+    double *log_ref_z = malloc(num_jobs * sizeof(double));
+
+    if (!log_ref_x || !log_ref_y || !log_ref_z) {
+        perror("Failed to allocate extra memory for logs");
+        return EXIT_FAILURE;
+    }
+
     ControllerGains gains;
     initializeController(&gains);
     
@@ -257,10 +302,14 @@ int main(int argc, char *argv[]) {
         quadrotor_step_euler(&current_state, control_outputs.total_thrust, &applied_torque, (float)dt);
 
         // 3. Update Trajectory Setpoint
-        if (elapsed_total >= 2.0) {
-            reference.yaw = 0.5236f; // 30 degrees
-        } else {
-            reference.yaw = 0.0f;
+        // Switch to next waypoint when within 0.3 m
+        float ex = current_state.position.x - reference.position.x;
+        float ey = current_state.position.y - reference.position.y;
+        float ez = current_state.position.z - reference.position.z;
+        float dist = sqrtf(ex*ex + ey*ey + ez*ez);
+        if (dist < 0.3f && wp_idx < num_waypoints - 1) {
+            wp_idx++;
+            reference = waypoints[wp_idx];
         }
 
         // 4. Run Control Law
@@ -277,6 +326,12 @@ int main(int argc, char *argv[]) {
 
         // Log Data
         log_time[k] = elapsed_total;
+        log_x[k] = current_state.position.x;
+        log_y[k] = current_state.position.y;
+        log_z[k] = current_state.position.z;
+        log_ref_x[k] = reference.position.x;
+        log_ref_y[k] = reference.position.y;
+        log_ref_z[k] = reference.position.z;
         log_ref_yaw[k] = reference.yaw;
         log_yaw[k] = current_state.attitude.yaw;
         log_roll[k] = current_state.attitude.roll;
@@ -306,10 +361,12 @@ int main(int argc, char *argv[]) {
     if (strlen(output_file) > 0) {
         FILE *f = fopen(output_file, "w");
         if (f) {
-            fprintf(f, "time,ref_yaw,yaw,roll,pitch,F,tau_x,tau_y,tau_z,dt,latency_us\n");
+            fprintf(f, "time,x,y,z,roll,pitch,yaw,ref_x,ref_y,ref_z,F,tau_x,tau_y,tau_z,dt,latency_us\n");
             for (int i = 0; i < num_jobs; i++) {
-                fprintf(f, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", 
-                        log_time[i], log_ref_yaw[i], log_yaw[i], log_roll[i], log_pitch[i],
+                fprintf(f, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", 
+                        log_time[i], log_x[i], log_y[i], log_z[i], 
+                        log_roll[i], log_pitch[i], log_yaw[i],
+                        log_ref_x[i], log_ref_y[i], log_ref_z[i],
                         log_F[i], log_tau_x[i], log_tau_y[i], log_tau_z[i], log_dt[i], log_latency[i]);
             }
             fclose(f);
@@ -320,6 +377,12 @@ int main(int argc, char *argv[]) {
     }
 
     free(log_time);
+    free(log_x);
+    free(log_y);
+    free(log_z);
+    free(log_ref_x);
+    free(log_ref_y);
+    free(log_ref_z);
     free(log_ref_yaw);
     free(log_yaw);
     free(log_roll);

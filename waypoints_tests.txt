@@ -1,0 +1,8 @@
+# waypoints_tests.txt
+# Sequential waypoints for Test 5 in test_dynamics.c
+# Format: x y z   (one waypoint per line, space-separated)
+# Lines starting with # are ignored.
+0.0 0.0 3.0
+3.0 0.0 3.0
+3.0 3.0 5.0
+0.0 0.0 1.0
