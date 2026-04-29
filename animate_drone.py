@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation, PillowWriter
+import argparse
 import os
 
 # ---------------------------------------------------------------------------
@@ -195,11 +196,36 @@ def animate_scenario(sc):
 # Entry point
 # ---------------------------------------------------------------------------
 def main():
-    print("=== Drone Animation Generator ===")
-    for sc in SCENARIOS:
-        print(f"\n[{sc['name'].upper()}]")
+    parser = argparse.ArgumentParser(description="Drone Animation Generator")
+    parser.add_argument("--csv", type=str, help="Path to the flight log CSV")
+    parser.add_argument("--gif", type=str, help="Path to output GIF")
+    parser.add_argument("--title", type=str, default="Flight Animation", help="Title for the animation")
+    parser.add_argument("--waypoints", type=str, help="Path to waypoints.txt (optional)")
+    args = parser.parse_args()
+
+    if args.csv and args.gif:
+        print(f"Animating custom log: {args.csv}")
+        sc = {
+            "name": "custom",
+            "csv": args.csv,
+            "gif": args.gif,
+            "title": args.title,
+            "fps": 20,
+            "targets": [],
+            "waypoints": [],
+            "step": 5,
+                "xlim": (-5, 5),
+                "ylim": (-5, 5),
+                "zlim": (0, 10),
+            "waypoints_file": args.waypoints
+        }
         animate_scenario(sc)
-    print("\nAll done.")
+    else:
+        print("=== Drone Animation Generator (Standard Scenarios) ===")
+        for sc in SCENARIOS:
+            print(f"\n[{sc['name'].upper()}]")
+            animate_scenario(sc)
+        print("\nAll done.")
 
 if __name__ == "__main__":
     main()

@@ -24,9 +24,9 @@ plt.rcParams.update({
     'axes.spines.right':False,
     'axes.grid':        True,
     'grid.alpha':       0.3,
-    'legend.fontsize':  8,
-    'axes.titlesize':   10,
-    'axes.labelsize':   9,
+    'legend.fontsize':  12,
+    'axes.titlesize':   12,
+    'axes.labelsize':   12,
 })
 
 # ---------------------------------------------------------------------------
@@ -268,27 +268,31 @@ def plot_scenario(csv_file, stem, title, targets=None):
     _save(_fig_attitude(df, title),                f'{stem}_attitude.svg')
 
 
-def plot_waypoints(csv_file, stem):
+def plot_waypoints(csv_file, stem, out_dir=".", title='Test 5 – 4-Waypoint Sequence', waypoints=None):
     """
-    Generates two figures for the 4-waypoint scenario, with vertical
+    Generates figures for the 4-waypoint scenario, with vertical
     waypoint-switch markers on each subplot.
     """
-    WAYPOINTS = [
-        (0.0, 0.0, 3.0),
-        (3.0, 0.0, 3.0),
-        (3.0, 3.0, 5.0),
-        (0.0, 0.0, 1.0),
-    ]
-    title = 'Test 5 – 4-Waypoint Sequence'
+    if waypoints is None:
+        waypoints = [
+            (0.0, 0.0, 3.0),
+            (3.0, 0.0, 3.0),
+            (3.0, 3.0, 5.0),
+            (0.0, 0.0, 1.0),
+        ]
 
     if not os.path.exists(csv_file):
         print(f"  [SKIP] {csv_file} not found.")
         return
 
+    os.makedirs(out_dir, exist_ok=True)
+
     df = pd.read_csv(csv_file)
-    _save(_fig_overview(df, title, waypoints=WAYPOINTS), f'{stem}_overview.svg')
-    _save(_fig_position(df, title, waypoints=WAYPOINTS), f'{stem}_position.svg')
-    _save(_fig_attitude(df, title, waypoints=WAYPOINTS), f'{stem}_attitude.svg')
+    _save(_fig_overview(df, title, waypoints=waypoints), os.path.join(out_dir, f'{stem}_overview.svg'))
+    _save(_fig_3d(df, title, waypoints=waypoints), os.path.join(out_dir, f'{stem}_3d.svg'))
+    _save(_fig_topdown(df, title, waypoints=waypoints), os.path.join(out_dir, f'{stem}_topdown.svg'))
+    _save(_fig_position(df, title, waypoints=waypoints), os.path.join(out_dir, f'{stem}_position.svg'))
+    _save(_fig_attitude(df, title, waypoints=waypoints), os.path.join(out_dir, f'{stem}_attitude.svg'))
 
 
 # ---------------------------------------------------------------------------
