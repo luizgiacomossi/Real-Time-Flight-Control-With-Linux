@@ -1,5 +1,11 @@
 # Real-Time Quadcopter Flight Control With Linux
 
+![4-Waypoint Sequence](animations/anim_waypoints.gif)
+
+---
+
+
+
 ## Overview
 
 This repository implements a **real-time quadrotor flight control system** for Linux, combined with a **Software-in-the-Loop (SITL) simulation framework** for rigorous performance evaluation. The primary goal is to measure the direct impact of Linux scheduling policies and kernel preemption on closed-loop flight control stability — a methodology used to support academic research into real-time operating systems.
